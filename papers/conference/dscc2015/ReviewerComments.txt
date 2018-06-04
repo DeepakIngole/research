@@ -1,0 +1,27 @@
+TODO:
+
+Reviewer 1:
+Well-written paper. The algorithm developments are clear and the authors acknowledge the lack of a convergence proof while simultaneously demonstrating good performance in practice.
+Two minor formatting issues to note: (1) the typesetting of Equation 7 is confusing and makes it appear at first glance that there are three cases, and (2) the comparison plots of the planned vehicle paths are too small to see notable differences between the three separate paths.
+Please see other reviewers' comments for additional improvements that could be made.
+
+
+Reviewer 2:
+The authors proposed an iterative algorithm for generating longitudinal and lateral control commands to maneuver a vehicle through a race course in minimum time. Given an initial path, the velocity profile is generated using a three-pass approach. With the resulting speed profile, a minimum curvature path is generated using convex optimization. Although the algorithm does not ensure convergence or global optimality, it is computationally efficient. The paper also includes sufficient literature review on this research problem. Overall, this is a good conference paper.
+Some suggestions for improvement are as follows:
+
+1.	The authors argue that the optimization problem for MPC cannot be solved fast enough. Two considerations may help with this concern: a.	The computation time is 920 ms per step using MATLAB. The computational time would be decreased using a compiled language such as C / C++. b.	Is 20 ms step size really necessary? Even when the vehicle moves at 50 m/s, the vehicle only moves 1 m in 20 ms.
+2.	The paper only reports the computational time of the proposed algorithm. It would be beneficial to include the computational time of the nonlinear optimization approach for comparison.
+3.	If this algorithm is to be modified into an online path planner, no guarantee of convergence might be an issue.
+4.	Fig. 8 and Fig. 9 could be improved by clearly differentiating the three lines.
+5.	The speed profile of a professional driver is not shown in Fig. 11.
+
+
+
+Reviewer 3:
+The paper proposes an iterative algorithm for maneuvering a single vehicle in minimum time. The algorithm considers two sequential sub-problems aiming at reducing the computational complexity. The problem is interesting and relevant. The proposed algorithm is well explained and the results are solid, and therefore I recommend it for presentation and publication in the proceedings of DSCC. There are a few typos and grammatical errors that the authors should fix. The authors have missed several IEEE papers in this area. The revised paper should include a more detailed literature review.
+
+
+Reviewer 4:
+This paper presents an iterative algorithm that generates vehicle racing trajectories with low computational expense. The paper is well written and shall be published in the conference.
+

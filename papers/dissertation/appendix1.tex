@@ -1,0 +1,420 @@
+\chapter{Engine Control with Shared Actuation}
+
+The majority of this manuscript has focused on model predictive control of a limited number of inputs to achieve multiple objectives over time. Another common use of model predictive control is the coordination of multiple inputs in an over-actuated system, where the number of inputs is greater than the number of objectives. Specifically, MPC is well suited to handle input constraints in these types of systems. In this appendix, a model predictive control design is presented which uses three inputs to control two outputs of a combustion engine running an advanced combustion strategy known as Homogeneous Charge Compression Ignition (HCCI). In addition to the typical input constraints encoutered in engine control applications, this work tackles the unique challenge of a shared actuator across multiple cylinders in a multi-cylinder engine. This sharing of a common actuator results in the coupling of otherwise independent systems, resulting in a challenging control problem. The majority of this appendix was originally presented at the 5th Annual ASME Dynamic Systems and Control Conference in 2012 \cite{Erlien2012} and later published in the Journal of Dynamic Systems, Measurements, and Control in 2013 \cite{ErlienJDSMC_2013}.
+
+\section{Abstract} % should be < 200 words
+Recent work in Homogeneous Charge Compression Ignition (HCCI) engine control has focused on the use of variable valve timing (VVT) as a near term implementation strategy. Valve timing has a significant influence on combustion phasing and can be implemented with cam-based VVT systems already available in production vehicles. However, these systems introduce cylinder coupling via a shared actuator. The authors present a Model Predictive Control (MPC) framework that explicitly accounts for this inter-cylinder coupling as a constraint on the system. The execution time step of this MPC controller is shorter than the prediction time step, enabling consideration of a common  actuator across otherwise independent systems as the engine cycle progresses. This enables effective use of the cylinder independent actuators to augment the shared actuator in achieving the control objectives. Experiments on a multi-cylinder HCCI engine test bed validate this approach to handling coupled actuation and illustrate effective use of cylinder independent actuators in response to limited capabilities of the shared actuator.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+The homogeneous charge compression ignition (HCCI) internal combustion engine is a promising technology to provide improved efficiency and reduced emissions relative to conventional spark-ignition (SI) and compression-ignition (diesel) engines \cite{Epping2002, Stanglmaier1999}. A key challenge is implementing this technology on cost effective hardware for production vehicles. The use of variable valve timing (VVT) to enable HCCI combustion is recognized as one of the possible implementation strategies closest to production because it can be implemented with commercially available cam phaser technology \cite{Persson2005}. Several methodologies have been proposed to use VVT in the control of HCCI \cite{Shaver2005,Bengtsson2006,Kang2009,Widd2011,Ravi2012}.
+
+Shaver \textit{et al.} \cite{Shaver2005} demonstrated control of peak pressure and combustion phasing of HCCI in a single cylinder using variable intake timing and quantity of trapped residual as control inputs, both of which were actuated using VVT. Bengtsson \textit{et al.} \cite{Bengtsson2006} used a dual fuel strategy along with variable intake valve closing in cycle-by-cycle control of combustion phasing, work output, peak pressure, and emissions of an HCCI engine. Kang \textit{et al.} \cite{Kang2009} used negative valve overlap implemented with cam-based VVT in the control of HCCI in two demo vehicles. Widd \textit{et al.} \cite{Widd2011} used variable valve timing along with inlet air temperature to track desired combustion phasing and work output of a multi-cylinder HCCI engine. Although an electric heater was used in the work, Widd suggests the use of variable exhaust timing to trap or reinduct exhaust gases would be preferable in practice. More recently, Ravi \textit{et al.} \cite{Ravi2012} demonstrated successful tracking of desired work output and combustion phasing within air-to-fuel ratio constraints using split fuel injection and variable exhaust valve timing. This body of work shows promise for near term implementation of HCCI; however, there is work to be done in addressing the inability of cam based VVT systems to independently phase each cylinder and how such a limitation impacts HCCI control on multi-cylinder engines.
+
+Cam based VVT systems cannot independently phase each cylinder, but instead apply a uniform phasing across all cylinders. In the short amount of time between combustion events, a cam phaser could be used to make subtle adjustments to this unified phasing to allow slightly varying valve timing for each cylinder. The maximum rate of change (or slew rate) of the cam phaser dictates the extent to which this can be done. This limitation has little consequence in SI engine control where cylinder valve phasing is almost always uniform; however, the sensitivity of auto-ignition to cylinder-to-cylinder variations makes this coupling an important consideration for HCCI. It has been shown that variations among cylinders (due to differences in cooling, gas exchange, compression ratio, fuel supply, etc) require the application of differing inputs to each cylinder to balance combustion phasing and work output in multi-cylinder HCCI engines \cite{Hyvonen2004,Persson2005}.
+
+This appendix explores the effect of a coupled valve timing actuator on HCCI control performance and introduces a controller framework which explicitly accounts for this limitation on a multi-cylinder engine. Since this coupling can be modeled as a constraint on the system, Model Predictive Control (MPC) is a natural starting point for this work as it provides a straightforward approach to constraint handling. This work builds upon the approach of Ravi \textit{et al.} \cite{Ravi2012} which focuses on the control of recompression HCCI using three inputs: main injection quantity, pilot injection timing, and exhaust valve timing. All of these can be actuated using two production actuators: direct injection (DI) fuel injectors and cam phasers. The control objectives are the tracking of desired work output and combustion phasing while maintaining the equivalence ratio, a normalized oxygen-to-fuel ratio metric, within an acceptable range for the purposes of efficiency and after treatment.
+
+Even though recompression HCCI is the focus here, the framework presented for inter-cylinder constraint handling could be applied more broadly. For example, reinduction HCCI implemented with a cam-based VVT is also limited by a shared actuator. If the combustion dynamics could be adequately described by a linear model, the framework presented could be directly applied.
+
+The remainder of this appendix is structured as follows: a model which captures the dynamics of HCCI combustion is outlined from which all the system constraints can be expressed. Next, the MPC controller structure is discussed along with details of an optimal control formulation which accounts for the effects of coupled actuation across multiple cylinders. Finally, experimental results of this controller applied to a multi-cylinder engine test bed are presented.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Modeling} \label{sec:modeling}
+In order to develop a MPC controller, a model of suitable for real-time optimization is required. This work leverages a physics-based, control-oriented model of HCCI combustion dynamics of the form (\ref{eq:nonLinModel}) presented in detail by Ravi \textit{et al.} \cite{Ravi2012} and summarized in the following section.
+%%%%%%%%%%%%%%%%% FIGURE         engineCycle
+\begin{figure}
+\centering
+\includegraphics[width=\fullwidth]{engineCyclePlot.pdf}
+\caption{Engine cycle}
+\label{fig:engineCycle}
+\end{figure}
+
+\begin{equation}
+\begin{aligned}
+O_2^{(k+1)} &= f_{1}^{}(O_{2}^{(k)},T^{(k)},n_{\mathrm{fuel}}^{(k)},V_{\mathrm{EVC}}^{(k)},u_{\mathrm{th}}^{(k)})\\
+T^{(k+1)} &= f_{2}^{}(O_2^{(k)},T^{(k)},n_{\mathrm{fuel}}^{(k)},V_{\mathrm{EVC}}^{(k)},u_{\mathrm{th}}^{(k)})\\
+\theta_{50}^{(k)} &= g_{1}^{}(O_{2}^{(k)},T^{(k)},n_{\mathrm{fuel}}^{(k-1)})\\
+\mathrm{NMEP}^{(k)} &= g_{2}^{}(n_{\mathrm{fuel}}^{(k-1)})\label{eq:nonLinModel}\\
+\end{aligned}
+\end{equation}
+where $f_1$, $f_2$, $g_1$, and $g_2$ are nonlinear functions and the superscript $^{(k)}$ denotes engine cycle $k$.
+
+\subsection{Nonlinear Model}
+\label{sec:nonlinearModel}
+This cycle-by-cycle model is inherently discrete with time steps occurring for each combustion event. The system states are oxygen concentration, $[O_2]$, and charge temperature, $T$, in the cylinder at 60 crank angle degrees (CAD) before combustion top dead center. This point also serves as the start of an engine cycle as defined in this work and illustrated in  \figurename~\ref{fig:engineCycle}. These thermodynamic states are related to combustion phasing via an Arrhenius rate model, $g_1$. The start of combustion is modeled as the point in time when an integrated reaction rate, which depends on in-cylinder temperature and reactant concentrations, exceeds a given Arrhenius threshold, $u_{\mathrm{th}}$. This approach is effective in capturing the start of HCCI combustion \cite{Shaver2005}. The combustion process is assumed to proceed using an Weibe function, and the CAD at which 50\% of the fuel energy has been converted to sensible energy is determined. This point is denoted as $\theta_{50}$ and serves as a proxy for combustion phasing.
+Cycle-to-cycle dynamics are captured by functions, $f_1$ and $f_2$, of the system states and the following inputs:
+\begin{tabbing}
+$n_{\mathrm{fuel}}$\quad\= total moles of fuel injected\\
+$V_{\mathrm{EVC}}$\> volume of residual at exhaust valve closing, $\theta_{EVC}$\\
+$u_{\mathrm{th}}$\> Arrhenius threshold; proxy for pilot timing, $\theta_{\mathrm{pilot}}$
+\end{tabbing}
+
+Split fuel injection with a single, fixed quantity pilot injection followed by a variable quantity main injection is a powerful way to control combustion phasing. The influence of pilot injection timing on combustion phasing is modeled using an Arrhenius threshold that varies as a function of pilot injection timing, $\theta_{\mathrm{pilot}}$.
+
+Both thermodynamic states of the system are strongly affected by the volume of trapped residual, $V_{\mathrm{EVC}}$, which is determined by the exhaust valve timing, $\theta_{EVC}$. This relationship holds only when there is a negative valve overlap condition as is the case for the valve timings used in this work. The nonlinear mapping from $\theta_{EVC}$ to $V_{\mathrm{EVC}}$ is shown in \figurename~\ref{fig:VEVCmapping} and is important for actuator constraint consideration discussed later. Work output, expressed as Net Mean Effective Pressure ($\mathrm{NMEP}$), in recompression HCCI has been empirically shown to be strongly dependent on the amount of fuel injected for a fixed combustion phasing. Given the control objective of tracking a desired combustion phasing, work output is assumed to be dependent only on quantity of fuel injected; therefore, $g_2$ is only a function of $n_{\mathrm{fuel}}$.
+
+\subsection{Linear Model}
+\label{sec:linearModel}
+As a result of the computational constraints of real-time engine control, this work focuses on Linear MPC in favor of Non-Linear MPC. Widd \textit{et al.} \cite{Widd2011} demonstrated successful use of Linear MPC in the control of HCCI in a single cylinder using a hybrid model consisting of linearizations of non-linear model (\ref{eq:nonLinModel}). In this work a single linearization about the steady-state operating point described in Table \ref{tb:linearizationPoint} sufficiently captures the dynamics of HCCI in the nominal to late phasing region \cite{Liao2010}, and gives the following normalized linear model:
+% discrete state space model for single cylinder
+\begin{equation}
+\begin{aligned}
+x_{i}^{(k+1)} &= Fx_{i}^{(k)}+Gu_{i}^{(k)}\\
+y_{i}^{(k)} &= Hx_{i}^{(k)}\\
+% state, input, output definitions
+x^{(k)} =
+\begin{bmatrix}
+[O_2]^{(k)}                     \\[0.3em]
+T^{(k)}                         \\[0.3em]
+n_{\mathrm{fuel}}^{(k-1)}     \\[0.3em]
+u_{\mathrm{th}}^{(k-1)}
+\end{bmatrix}, \quad
+u^{(k)} &=
+\begin{bmatrix}
+n_{\mathrm{fuel}}^{(k)}   \\[0.3em]
+V_{\mathrm{EVC}}^{(k)}    \\[0.3em]
+u_{\mathrm{th}}^{(k)}
+\end{bmatrix}, \quad
+y^{(k)} =
+\begin{bmatrix}
+\theta_{50}^{(k)}       \\[0.3em]
+\mathrm{NMEP}^{(k)}    \\[0.3em]
+\end{bmatrix}
+\end{aligned}
+\label{eq:sinCylModel}
+\end{equation}
+where $x$, $u$, and $y$ denote the states, inputs, and outputs, respectively, of a single cylinder, $i$.
+
+%%%%%%%%%%%%%%%%% Linearization Point
+\ctable[
+caption = Steady-state Linearization Point,
+label = tb:linearizationPoint,
+pos = h
+]{ccc}{
+\tnote{Combustion TDC is defined as 0 [CAD]}
+}{ \FL
+Parameter &Value &Units \ML
+Engine speed &$1800$ &rpm \NN
+$\theta_{50}$ &$6$ &CAD\tmark[a] \NN
+NMEP &$2.5$ &bar \NN
+EVO &148 &CAD\tmark[a] \NN
+EVC &288 &CAD\tmark[a] \NN
+Main injection quantity &$9$ &mg \NN
+Pilot injection timing &$395$ &CAD\tmark[a] \LL
+}
+
+Table \ref{tb:engineTestConditions} describes the engine parameters that are assumed fixed in the engine model and held fixed during the experimentation described later on.
+%%%%%%%%%%%%%%%%% Engine Operating Conditions
+\ctable[
+caption = Fixed Engine Parameters,
+label = tb:engineTestConditions,
+pos = h
+]{ccc}{
+\tnote{Combustion TDC is defined as 0 [CAD]}
+}{ \FL
+Parameter &Value &Units \ML
+Engine speed &$1800$ &rpm \NN
+IVO &430 &CAD\tmark[a] \NN
+IVC &570 &CAD\tmark[a] \NN
+Main injection timing &$420$ &CAD\tmark[a] \NN
+Pilot injection quantity &$1$ &mg \LL
+}
+
+\subsection{Actuator Limitations}
+\label{sec:inputConstraints}
+The performance of a cam phaser system is often specified in terms of maximum slew rate or maximum rate of change of phaser angle. This slew rate limitation can be modeled as:
+\begin{equation}
+\left|\frac{\Delta\theta_{\mathrm{EVC}}~[\mathrm{deg}]}{\Delta t~[\mathrm{s}]}\right| \leq \dot{\theta}_{\mathrm{EVC,max}}~[\mathrm{deg/s}] \label{eq:EVCslewConstraintTemp}
+\end{equation}
+where $\Delta t$ is the time between combustion events, $\Delta\theta_{\mathrm{EVC}}$ is the change in exhaust cam phaser position, and $\dot{\theta}_{\mathrm{EVC,max}}$ is the maximum cam phaser slew rate. For reference, production hydraulic cam systems capable of $\dot{\theta}_{\mathrm{EVC}} = 200$ [deg/s] have been documented in the literature \cite{Sinnamon2007}.
+
+%%%%%%%%%%%%%%%%% FIGURE         VEVCmapping
+\begin{figure}
+\centering
+\includegraphics[width=8 cm]{wRegionVEVCmapping.pdf}
+\caption{Cylinder volume as a function of CAD. Shaded region indicates typical exhaust valve closing timing, $\theta_{\mathrm{EVC}}$, for recompression HCCI}
+\label{fig:VEVCmapping}
+\end{figure}
+
+The mapping from $\theta_{\mathrm{EVC}}$ to $V_{\mathrm{EVC}}$ is in general nonlinear; however, in the range of operation typical of recompression HCCI, this mapping is well approximated as affine as illustrated in \figurename~\ref{fig:VEVCmapping}. For other modes of HCCI where the operating range of $\theta_{\mathrm{EVC}}$ does not permit an affine approximation of this mapping, a linearization at each time step may be used instead. With this affine approximation, constraint (\ref{eq:EVCslewConstraintTemp}) can be expressed as the following constraint on $V_{\mathrm{EVC}}$:
+\begin{equation}
+\left|\Delta V_{\mathrm{EVC}} \right| \leq \Delta V_{\mathrm{EVC,max}} \label{eq:EVCslewConstraint}
+\end{equation}
+where $\Delta V_{\mathrm{EVC,max}} = \alpha \Delta t \dot{\theta}_{\mathrm{EVC,max}}$ for some scalar $\alpha$. It is important to note that as engine speed increases, $\Delta t$ decreases, causing constraint (\ref{eq:EVCslewConstraint}) to tighten.
+
+The other two inputs, $n_{\mathrm{fuel}}$ and $u_{\mathrm{th}}$, are realized by cylinder independent DI fuel injectors with no slew rate limitations. However, pilot injection timing has a well defined window of authority outside of which its effect on combustion phasing saturates \cite{Ravi2012}. Since pilot injection timing is mapped to $u_{\mathrm{th}}$ as discussed previously, bounds on $u_{\mathrm{th}}$ must be imposed to ensure the validity of linear model (\ref{eq:sinCylModel}). In addition, bounds on the other two inputs are imposed to prevent significant deviations away from the equilibrium point about which the system model is linearized. These bounds can all be expressed as the linear inequality:
+\begin{equation}
+u_{\mathrm{min}} \preceq u \preceq u_{\mathrm{max}}
+\end{equation}
+where $u$ is the system input as defined in (\ref{eq:sinCylModel}), $\left[\begin{array}{cc}u_{\mathrm{min}} & u_{\mathrm{max}} \\\end{array}\right]$ are the actuator saturation limits, and $\preceq$ denotes element-wise inequality.
+
+\subsection{Equivalence Ratio Bound}
+\label{sec:stateConstraints}
+The requirement to operate within a specified range of equivalence ratios, $[\Phi_{min}~\Phi_{max}]$, can be expressed as linear constraints on two of the states, $[O_2]$ and $n_{\mathrm{fuel}}$, of linear model (\ref{eq:sinCylModel}). These constraints can be derived starting from the definition of equivalence ratio:
+\begin{equation}
+\begin{aligned}
+\Phi &= \frac{([\mathrm{fuel}]/[O_2])}{([\mathrm{fuel}]/[O_2])_{\mathrm{stoich}}}\\
+&= \frac{cn_{\mathrm{fuel}}}{[O_2]} \label{eq:equivDef}
+\end{aligned}
+\end{equation}
+where $c$ is a constant for a given fuel. Using (\ref{eq:equivDef}) allows constraint (\ref{eq:equivMaxMin}) to be expressed as the linear inequalities (\ref{eq:equivMaxMinLin}).
+\begin{gather}
+\begin{aligned}
+\Phi_{\mathrm{min}} &\leq \Phi \leq \Phi_{\mathrm{max}} \label{eq:equivMaxMin}\\
+\end{aligned}\\
+\begin{aligned}
+0 &\leq -cn_{\mathrm{fuel}} + [O_2] \Phi_{\mathrm{max}} \label{eq:equivMaxMinLin}\\
+0 &\leq +cn_{\mathrm{fuel}} - [O_2] \Phi_{\mathrm{min}}
+\end{aligned}
+\end{gather}
+Linear inequalities (\ref{eq:equivMaxMinLin}) can be succinctly expressed as:
+\begin{equation}
+H_{\Phi}x \preceq 0 \label{eq:AFRconstraint}
+\end{equation}
+where $H_{\Phi}\in\field{R}^{2\times4}$ and $x$ is the system state as defined in (\ref{eq:sinCylModel}). Violation of inequality (\ref{eq:AFRconstraint}) implies combustion is not within the given equivalence ratio bounds; therefore, this inequality can be used as a constraint on the system states to ensure proper oxygen-to-fuel ratio during combustion.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{MPC Controller} \label{sec:controller}
+As stated previously, the many constraints required of the system make MPC a natural choice for this work. The block diagram of the implemented controller is illustrated in \figurename~\ref{fig:controller}.
+
+%%%%%%%%%%%% Figure %%%%%%%%%%%%%%%%    Controller block diagram
+\begin{figure}
+\centering
+\includegraphics[width=10 cm]{controllerBlockDiagram.pdf}
+\caption{\text{Controller block diagram}}
+\label{fig:controller}
+\end{figure}
+%%%%%%%%%%%%%%%% end figure %%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{State Estimator}
+\label{sec:stateEstimator}
+The thermodynamic states of each cylinder cannot be directly measured. These are in-cylinder oxygen concentration, $[O_2]$, and in-cylinder temperature, $T$. The remaining two states, $n_{\mathrm{fuel}}$ and $u_{\mathrm{th}}$, need not be estimated as they are known inputs from the previous engine cycle. For this work, each cylinder is assumed to be equipped with an in-cylinder pressure transducer whose measurement can be directly used to calculate $\theta_{50}$ and $\mathrm{NMEP}$, the two outputs of linear model (\ref{eq:sinCylModel}). Although not commonly found in production vehicles, in-cylinder pressure sensors which integrate into the spark plug housing have been developed at price points low enough for mass production \cite{Sellnau2000}.
+
+Ravi \textit{et al.} \cite{Ravi2012} demonstrated that while $\theta_{50}$ provides a strong measurement to estimate in-cylinder temperature, work output is strongly related to quantity of fuel injected and not useful in estimating $[O_2]$. To accurately estimate in-cylinder oxygen concentration, wide-band oxygen-sensors in the exhaust are used in this work. It has been shown that if these oxygen sensors are located near the exhaust port, their measurements can be used to calculate a more accurate estimate of in-cylinder oxygen concentration compared to using only $\theta_{50}$. Using both exhaust oxygen concentration and $\theta_{50}$ measurements, a Kalman filter implementation is used to generate a state estimation, $\hat x$, for each cylinder \cite{Ravi2012b}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Output Disturbance Estimator}
+To achieve offset-free tracking in the presence of unmodeled disturbances or model/plant mismatch, MPC controllers often include an output disturbance estimator \cite{Pannocchia2007}. As shown in \figurename~\ref{fig:cylVarSameInput}, identical inputs to each cylinder result in measurably different outputs. To account for these differences directly, the plant model described in Section~\ref{sec:linearModel} would have to be tuned separately for each cylinder, significantly undermining the usefulness of this approach. Alternatively, these differences can be modeled as cylinder-based output disturbances. The following low-pass filter is used as the output disturbance model:
+\begin{equation}
+\begin{aligned}
+& \hat{y}_{dis,i}^{(k+1)} = \hat{y}_{dis,i}^{(k)} + \lambda(y_{meas,i}^{(k)} - y_{c}^{(k)})\label{eq:outputDisModel}\\
+\end{aligned}
+\end{equation}
+where $\hat{y}_{dis,i}^{(k)}$, $y_{meas,i}^{(k)}$, and $y_{c}^{(k)}$ are the output disturbance estimate, measured output, and commanded output of cylinder $i$ at engine cycle $k$, respectively. The scalar $\lambda$ is chosen such that the disturbance estimator operates at a frequency lower than the state estimator presented in Section~\ref{sec:stateEstimator}. This output disturbance estimate provides an offset to the desired output used by the open loop optimization:
+\begin{equation}
+\begin{aligned}
+& \tilde{y}_{c,i} = y_c - \hat{y}_{dis,i}\label{eq:modCmdOutput}\\
+\end{aligned}
+\end{equation}
+where $\tilde{y}_{c,i}$ is the modified commanded output for cylinder $i$. This modified commanded output provides an integrating component to the controller which ensures error free steady-state tracking without compromising the constraint handling capabilities of MPC. These integrating offsets are bounded to prevent wind-up when trade-offs between output tracking and desired equivalence ratio bounds result in slight yet sustained output tracking error.
+%%%%%%%%%%%%%%%%%  FIGURE        cylVarSameInput
+\begin{figure}
+\centering
+\includegraphics[width=\halfwidth]{cylVarSameInput.pdf}
+\caption{Experimental results of cylinder variation with identical inputs}
+\label{fig:cylVarSameInput}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Open Loop Optimization}
+\label{sec:optimization}
+At the heart of any MPC controller is a receding horizon optimization problem to determine the optimal inputs to drive the system to the commanded output without violating any of the system constraints. As discussed previously, cam based VVT systems introduce cylinder coupling via a shared actuator in a multi-cylinder engine; therefore, when determining the optimal inputs for the next cylinder to combust, the state and dynamics of all cylinders must be considered. From the single cylinder dynamics described by (\ref{eq:sinCylModel}), a multi-cylinder model can be easily constructed whose time step is a complete engine cycle:
+% multi-cylinder state-space model
+\begin{gather}
+\begin{aligned}
+&& \mathbf x^{(k+1)} &= A \mathbf x^{(k)}+ B \mathbf u^{(k)}\\
+&& \mathbf y^{(k)} &= C \mathbf x^{(k)} \label{eq:multCylModel}
+%% multi-cylinder matrix definitions
+\end{aligned}\\
+\begin{aligned}
+A &=
+\begin{bmatrix}
+F_{(1)} & &   \\
+ & \ddots & \\
+&  & F_{(n)} \\[2ex]
+\end{bmatrix} &
+B &=
+\begin{bmatrix}
+G_{(1)} & &  \\
+ & \ddots & \\
+ & & G_{(n)}  \\
+\end{bmatrix} &
+C &=
+\begin{bmatrix}
+H_{(1)} & &   \\
+ & \ddots & \\
+ & & H_{(n)} \\
+\end{bmatrix} \nonumber \\
+\end{aligned}\\
+\begin{aligned}
+%% multi-cylinder vector definitions
+\mathbf x^{(k)} &=
+\begin{bmatrix}
+x_{1}^{(k)}   \\[0.3em]
+x_{2}^{(k)}   \\[0.3em]
+\vdots      \\[0.3em]
+x_{n}^{(k)}
+\end{bmatrix} \quad &
+\mathbf u^{(k)} &=
+\begin{bmatrix}
+u_{1}^{(k)}   \\[0.3em]
+u_{2}^{(k)}   \\[0.3em]
+\vdots      \\[0.3em]
+u_{n}^{(k)}
+\end{bmatrix} \quad &
+\mathbf y^{(k)} &=
+\begin{bmatrix}
+y_{1}^{(k)}   \\[0.3em]
+y_{2}^{(k)}   \\[0.3em]
+\vdots      \\[0.3em]
+y_{n}^{(k)}
+\end{bmatrix} \nonumber
+\end{aligned}
+\end{gather}
+where $n$ denotes the number of cylinders and $\mathbf x^{(k)}$, $\mathbf u^{(k)}$, and $\mathbf y^{(k)}$ are the states, inputs, and outputs, respectively, of all cylinders at engine cycle $k$ in relative order of pending combustion with the next cylinder to combust listed first. In other words, the state, input, and output vectors are shifted every controller execution time step such that the top of the vector corresponds to the next cylinder to combust. A similar definition is used for the state estimate of the complete engine, $\mathbf{\hat x}$, by combining the state estimates of each cylinder in the same order.
+
+The system constraints discussed previously can now be expressed using this multi-cylinder model. Equivalence ratio constraint (\ref{eq:AFRconstraint}) for a single cylinder can be easily expressed for all cylinders as:
+\begin{gather}
+C_{\Phi} \mathbf x \preceq 0 \\[2ex]
+% matrix definition
+C_{\Phi} =
+\begin{bmatrix}
+H_{\Phi(1)} & &   \\
+ & \ddots & \\
+ & & H_{\Phi(n)} \nonumber \\
+\end{bmatrix}
+\end{gather}
+Cam phaser slew rate constraint (\ref{eq:EVCslewConstraint}) results in the following constraints in a multi-cylinder engine:
+\begin{subequations}
+\label{eq:uglySlewLimit}
+\begin{alignat}{2}
+%% Slew Limit Across Engine Cycles
+&&&\left|e_2' u_1^{(k)} - e_2' u_n^{(k-1)}\right| \leq \Delta V_{\mathrm{EVC,max}} \label{eq:uglyInterSlewLimit}\\
+%% Slew Limit Within Engine cycle
+&&&\left|e_2' u_{i+1}^{(k)} - e_2' u_i^{(k)}\right| \leq \Delta V_{\mathrm{EVC,max}} \label{eq:uglyInnerSlewLimit}\\
+&&& \qquad i=1,\ldots,n-1  \nonumber
+\end{alignat}
+\end{subequations}
+where $e_2'= \left[\begin{array}{ccc}0 & 1 & 0 \\\end{array}\right]$ and (\ref{eq:uglyInterSlewLimit}) and (\ref{eq:uglyInnerSlewLimit}) prevent exhaust cam phaser slew rate violations across and within engine cycles, respectively. Constraints (\ref{eq:uglySlewLimit}) are linear inequalities of the inputs to each cylinder and, with appropriately chosen matrices $M_{[1-3]}$, can be compactly rewritten as:
+\begin{subequations}
+\begin{alignat}{2}
+%% Slew Limit Across Engine Cycles
+&&& \left|M_1 \mathbf{u}^{(k)} - M_2 \mathbf{u}^{(k-1)}\right| \preceq \Delta V_{\mathrm{EVC,max}}\\
+&&& \left|M_3 \mathbf{u}^{(k)}\right| \preceq \Delta V_{\mathrm{EVC,max}}
+\end{alignat}\label{eq:niceSlewLimit}
+\end{subequations}
+The control objectives and system constraints outlined previously can now be expressed as a finite horizon optimal control problem:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% START Optimization Formulation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{subequations}
+\label{eq:engineOPT}
+\begin{alignat}{3}
+%% Objective Function
+\underset{\mathbf u}{\text{minimize}} \qquad &  \sum_{k=0}^{T-1}  && \left|\left|\mathbf y^{(k+1)} - \mathbf{\tilde{y}}_{\mathrm{c}}\right|\right|^2_{Q}\qquad \qquad \label{eq:engineOPTobjOutput}\\
+&& + & \left|\left|\mathbf u^{(k)}\right|\right|^2_{R}\label{eq:engineOPTobjInput}\\
+&& + & \left|\left|\mathbf u^{(k)} - \mathbf u^{(k-1)} \right|\right|^2_{S}\label{eq:engineOPTobjDeltaInput}\\
+%% Dynamic Constraints
+%% Dynamic Constraints
+\text{subject to} \qquad & \rlap{$\mathbf x^{(k+1)} = A \mathbf x^{(k)} + B \mathbf u^{(k)}$}\label{eq:engineOPTdynamics}\\
+& \rlap{$\mathbf y^{(k+1)} = C \mathbf x^{(k+1)}$}\\
+%% Output Constraints
+& \rlap{$C_{\Phi} \mathbf{x}^{(k+1)} \preceq 0$}\label{eq:engineOPTafr}\\
+%% Input Bounds
+& \rlap{$\mathbf u_{\mathrm{min}} \leq \mathbf u^{(k)} \leq \mathbf u_{\mathrm{max}}$}\label{eq:engineOPTulim}\\
+%% Slew Limit Across Engine Cycles
+& \rlap{$\left|M_1 \mathbf{u}^{(k)} - M_2 \mathbf{u}^{(k-1)}\right| \preceq \Delta V_{\mathrm{EVC,max}}$}\label{eq:engineOPTinterSlewLimit}\\
+%% Slew Limit Within Engine cycle
+& \rlap{$\left|M_3 \mathbf{u}^{(k)}\right| \preceq \Delta V_{\mathrm{EVC,max}}$}\label{eq:engineOPTinnerSlewLimit}\\
+& \rlap{$\qquad k=0,\ldots,T-1$} \nonumber
+\end{alignat}
+\end{subequations}
+where $T$ is the number of engine cycles in the prediction horizon, $\mathbf u^{(-1)}$ denotes the inputs on the previous engine cycle, $\mathbf x^{(0)}$ is the estimation of the current state of all cylinders (previously denoted as $\mathbf{\hat x}$), and $Q$, $R$, and $S$ are positive definite, diagonal weighting matrices.
+
+The objective function has three terms which represent the various objectives of the controller. Term (\ref{eq:engineOPTobjOutput}) enforces the desire to track the commanded outputs, $\mathbf{\tilde{y}}_c$, over the prediction horizon, $T$. Recall these commands are slightly modified by the output disturbance estimator to ensure steady-state tracking despite cylinder-to-cylinder variation. Objective term (\ref{eq:engineOPTobjInput}) is normally used in MPC to reduce actuation effort; however, since linear model (\ref{eq:sinCylModel}) is normalized around an equilibrium point, small $\left|\mathbf{u}\right|$ denotes input values near this equilibrium. For this reason, (\ref{eq:engineOPTobjInput}) induces a mid-ranging effect whereby inputs are chosen to allow the most available actuation authority to react to unmodeled disturbances. Final term (\ref{eq:engineOPTobjDeltaInput}) discourages high frequency input trajectories and can be interpreted as a tuning knob for the overall gain of the controller.
+
+The weighting matrices establish hierarchies within each objective. For example, the elements of $Q$ are chosen such that tracking error of combustion phasing is weighted more aggressively than work output error to reflect the importance of controlled phasing to avoid misfire. Also, $R$ is tuned to weigh deviations from equilibrium pilot timing over the other two inputs to reflect its narrow, but highly effective actuation authority. The relative scaling of the weighting matrices establishes an overarching hierarchy among the objectives.
+
+Although optimization problem (\ref{eq:engineOPT}) captures the desired objectives and constraints discussed previously, treating the equivalence ratio bound as a hard constraint undermines the importance of avoiding misfire because satisfaction of the equivalence ratio bound at the expense of combustion stability is undesirable. In reality, there exists a trade-off between this bound and the tracking objectives, which is incorporated through the softening of the previously hard constraint (\ref{eq:engineOPTafr}):
+\begin{equation}
+    C_{\Phi} \mathbf{x}^{(k+1)} \preceq s
+\end{equation}
+where $s$ is a nonnegative optimization variable.
+
+Adding a fourth term to the objective function of the form $Ws$ discourages violation of this softened constraint where $W$ is a positive scalar weight whose value establishes the trade-off between operation within a bounded region of equivalence ratio and the other controller objectives, specifically combustion phasing error that could lead to misfire.
+
+The optimal value of the objective is of little consequence, but the values of $\left[\begin{array}{cccc}\mathbf{u}^{(0)} & \mathbf{u}^{(1)} & \hdots & \mathbf{u}^{(T-1)} \\\end{array}\right]$ corresponding to this optimum describe the input trajectory for all cylinders over the prediction horizon to best meet the control objectives with explicit consideration of the slew rate limitation of an exhaust cam phaser. As is typically done in MPC implementations, the inputs for all time steps but the first are discarded leaving only $\mathbf{u}^{(0)}$. However, since the combustion of each cylinder within an engine cycle is staggered in time, this optimization can be rerun before each combustion event. Therefore, all $\left[\begin{array}{cccc}{u}_2^{(0)} & {u}_3^{(0)} & \hdots & {u}_{n}^{(0)} \\\end{array}\right]$ of $\mathbf{u}^{(0)}$ are also discarded and only ${u}_1^{(0)}$, the inputs for the next cylinder to combust, are applied to the engine. The controller is then rerun before the next combustion event which takes place $\frac{1}{n}$ engine cycles into the future. This disassociation of the prediction time step from the execution time step enables explicit consideration of a shared actuator among otherwise independent systems.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Implementation}
+Optimization problem (\ref{eq:engineOPT}) is a Quadratic Program (QP) with significant sparsity structure which can be leveraged to produce an efficient solver for real-time implementation \cite{Mattingley2010}. For this work, CVXGEN \cite{CVXGEN} facilitates this process, and the resulting controller is implemented on a single core of an Intel Core2Duo processor utilizing Matlab's real-time toolbox.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experimental Validation} \label{sec:expValidation}
+All results presented here are obtained using a four cylinder, 2.2 liter gasoline engine designed and produced by General Motors. This engine is modified for HCCI combustion with a compression ratio increase to 12:1 and modifications to the connecting rods and piston pinions. Kistler 6125 piezoelectric transducers mounted in each cylinder provide pressure measurements for feedback control along with wide band oxygen sensors located near the exhaust port of each cylinder. Fuel is delivered via a common rail direct injection system. An electro-hydraulic, fully flexible variable valve actuation (FFVVA) system actuates the intake and exhaust valves on each cylinder independently. However, during the following test cases, this FFVVA was made to emulate only the flexibility afforded by a cam phaser VVT system. In particular, constant valve profiles were used which could only be phased at rates slower than a specified maximum slew rate. The root mean square tracking error of this FFVVA system has been shown to be less than 40 $\mu$m \cite{Liao2011}.
+
+
+\subsection{Two Cylinders}
+For simplicity and ease of presentation, results for the control of 2 cylinders are presented initially. In these tests, the other two cylinders are operated in HCCI using open loop, fixed inputs, ensuring balanced operation of the engine and reported here for completeness. \figurename~\ref{fig:looseEVCSlew2Cyl} shows the system response to step changes in desired combustion phasing, $\theta_{50}$, and work output, NMEP, using a fast cam phaser slew rate of $300$ [deg/s]. The three outputs are shown on top and the three inputs on the bottom. The fast slew rate of the exhaust valve system allows for noticeably different commanded valve timings for the two cylinders. This is pronounced when the desired outputs drive the equivalence ratio up to the constraints. When this happens, the fuel quantity and exhaust valve timing are fully determined by the work output and equivalence ratio objectives, forcing the pilot injection timing to deviate from the nominal value to ensure adequate combustion phasing. When the equivalence ratio constraint is not active, the mid-ranging effect on pilot injection timing is evident, as seen at $5$ [s] and $22$ [s].
+
+%%%%%%%%%%%%%%%%% FIGURE         looseEVCSlew2Cyl
+\begin{figure}
+\centering
+\includegraphics[width=10 cm]{looseEVCSlew2Cyl.pdf}
+\caption{Experimental results of closed loop behavior with $n=2$ cylinders and a fast cam slew rate of 300 [deg/s]}
+\label{fig:looseEVCSlew2Cyl}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\figurename~\ref{fig:tightEVCSlew2Cyl} shows the closed loop system response using a relatively slow cam phaser slew rate of $50$ [deg/s]. This forces the exhaust valve timings for both cylinders to be nearly identical at all times. The mid-ranging effect is again observed for pilot injection and exhaust valve timing when the equivalence ratio constraint is not active. However, when this constraint is active for both cylinders between $30$ [s] and $38$ [s], a violation of the desired equivalence ratio bound is unavoidable without significant work output tracking error due to the slow cam slew rate. Therefore, in accordance with the objective hierarchy established by the relative weights in the objective function, operation outside of the equivalence ratio bound is observed. During this time, tracking of the desired outputs is relaxed and pilot injection timing deviates significantly from the nominal value while the controller seeks a compromise between the competing objectives.
+
+%%%%%%%%%%%%%%%%% FIGURE         tightEVCSlew2Cyl
+\begin{figure}
+\centering
+\includegraphics[width=10 cm]{tightEVCSlew2Cyl.pdf}
+\caption{Experimental results of closed loop behavior with $n=2$ cylinders and a slow cam slew rate of 50 [deg/s]}
+\label{fig:tightEVCSlew2Cyl}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Four Cylinders}
+The basic framework described thus far easily extends to four cylinders ($n=4$), resulting in a linear increase in the computation time of the controller as seen in \tablename~\ref{tb:mpcCalcTimes}.
+%%%%%%%%%%%%%%%%% MPC calc times table
+\ctable[
+caption = MPC Calculation Times,
+label = tb:mpcCalcTimes,
+pos = h
+]{cccc}{}{ \FL
+$n$ &$T$ &Ave [ms] &Max [ms] \ML
+2 &$3$ &$0.28$ &$0.50$ \NN
+4 &$3$ &$0.76$ &$1.00$ \LL
+}
+
+When considering four cylinders, the combustion order becomes important. For the four cylinder engine used in this work, the cylinder combustion order is: 1,3,4,2. Cylinder coupling due to shared actuation is strongest among neighbors in this ordering. This is illustrated in \figurename~\ref{fig:medEVCSlew4Cyl} which shows the system response to open loop, fixed inputs in the first 10 [s] and then closed loop behavior thereafter. In open loop, cylinder two's outputs differ significantly from the other cylinders, and, as expected, in closed loop the controller must apply extreme inputs to this cylinder to appropriately track the desired outputs while abiding by the equivalence ratio constraint. Specifically, this requires an early exhaust valve timing on cylinder two which stresses the control of neighboring cylinders four and one through the shared valve timing actuator. Therefore, the controller operates cylinder one more rich than cylinder three in order to best meet the control objectives within the constraints despite cylinders one and three having similar open loop characteristics. Such behavior is not expected if each cylinder were controlled independently. Therefore, adjustment of the controller as a result of inter-cylinder coupling is made evident.
+
+\figurename~\ref{fig:medEVCSlew4Cyl} illustrates how a shared actuator affects the control of a multi-cylinder engine running HCCI, and it showcases how an MPC controller informed of this actuator limitation can operate an HCCI engine to best meet the (sometimes competing) control objectives.
+
+%%%%%%%%%%%%%%%%% FIGURE         medEVCSlew4Cyl
+\begin{figure}
+\centering
+\includegraphics[width=10 cm]{medEVCSlew4Cyl.pdf}
+\caption{Experimental results with $n=4$ cylinders and a moderate cam slew rate of 200 [deg/s]. Controller turned on at 10 [s]. Cylinder combustion order is 1 3 4 2}
+\label{fig:medEVCSlew4Cyl}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}
+In \figurename~\ref{fig:looseEVCSlew2Cyl}, a fast cam phaser system with $\dot{\theta}_{\mathrm{EVC,max}} = 300$ [deg/s] is emulated, and the ability to quickly change the phasing allows for slightly varying EVC for each cylinder. This freedom enables tracking of combustion phasing and NMEP without violation of the specified equivalence ratio bound. In \figurename~\ref{fig:tightEVCSlew2Cyl}, a much slower cam phaser system with $\dot{\theta}_{\mathrm{EVC,max}} = 50$ [deg/s] is emulated which forces the EVC for each cylinder to be nearly identical. At times, the desired combustion phasing and NMEP cannot be achieved without violation of the specified equivalence ratio bound. This is a result of cylinder-to-cylinder variation and the shared cam phaser actuator. Knowledge of the states of all cylinders and the actuator limitation allows the controller to choose a cylinder coupled EVC which strikes a compromise between constraint violation and output tracking leading to stable combustion at the constraint limits.
+
+The simple model of the limitation of a cam phaser presented in Section~\ref{sec:inputConstraints} is sufficient to illustrate the effects of this shared actuator on a multiple-cylinder engine. However, improvements to this model could be made to more accurately reflect the behavior of cam phaser systems. Two such improvements, both of which are still compatible with the controller framework presented, are discussed.
+
+First, the $\Delta t$ used in Equation~\ref{eq:EVCslewConstraintTemp} was defined as the time between combustion events; however, phasing is typically done only when the valves are closed. To reflect this, a smaller value of $\Delta t$ could be used. This would serve to increase the coupling between cylinders and would further illustrate the need for the controller framework presented.
+Second, production cam systems are typically actuated hydraulically using engine oil; therefore, the maximum slew rate varies with oil temperature and pressure. Instead of using a maximum slew rate model, a second order mass-spring-damper model has been used in literature to characterize cam phaser dynamics \cite{Sinnamon2007}. This model can be used with the MPC controller presented if additional cam phaser states are incorporated into the optimization formulation and the constraint is specified in terms of maximum phaser torque, which could change in real-time.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+Inter-cylinder coupling resulting from cam-based VVT systems complicates the control of multi-cylinder HCCI engines. The authors presented a MPC controller which explicitly handles this inter-cylinder coupling through the use of a prediction time step which differs from the execution time step enabling consideration of a shared actuator among otherwise independent systems. This controller is validated on a multi-cylinder engine test bed where it provided good tracking performance while obeying actuator limitations despite significant open loop variation among the cylinders. These results give evidence that this framework allows for the implementation of HCCI utilizing actuators currently in production.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{acknowledgment}
+%Stephen Erlien is supported by a Graduate Research Fellowship from the National Science Foundation. The authors also gratefully acknowledge the constructive comments from the reviewers.

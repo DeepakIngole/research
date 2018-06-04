@@ -1,0 +1,72 @@
+Dear Reviewers,
+
+Thank you for your informative feedback, and we appreciate your generally positive outlook on our work. We have submitted an improved manuscript based on your feedback, with changes highlighted in the pdf. In addition, we would also like to respond directly to the feedback we recieved. Our response is shown below. Note that all references to 
+figures and equations come from the original manuscript.
+
+Please let us know if you have any more feedback, especially on our revised submission.
+
+Best wishes,
+Nitin
+
+
+
+___________________________
+FOR REVIEWER 1:
+___________________________
+
+COMMENT 1: Would it be possible to improve the on-track performance by using a normally oversteering (or at least less understeering) configuration?
+
+ANSWER: Yes, given the controller's ability to stabilize the vehicle in the event of rear tire saturation, a vehicle with a more balanced weight distribution would be able to handle several turns of the racing circuit without significantly understeering near the limits of handling. Unfortunately, we were limited in our testing capability by the vehicle provided to us by our corporate sponsor, and were therefore unable to demonstrate this experimentally. 
+
+
+COMMENT 2: Why not confirm some of these proposals with a simulation of the same vehicle on the same track?  Perhaps this was done but not discussed in the paper?
+
+ANSWER: In our controller design process, we did perform simulation of the same vehicle on the Thunderhill course to validate the performance of the steering controller. The simulation results provided the same qualitative results as the experiment, namely the understeering tendency of the vehicle near the limits of handling and the improvement in path tracking error with the addition of feedforward sideslip. Given this redundancy and the fifteen figure limit, we elected to not present the simulation results.  
+
+
+COMMENT 3: the authors might attempt to find some higher resolution or vector format images for some of the Figures, esp 7-10, as they look quite pixelated in the draft.
+
+ANSWER: Point well taken. We have switched to vector graphics format in the revised manuscript. 
+
+___________________________
+FOR REVIEWER 2:
+___________________________
+
+COMMENT 1: The main claim of the paper is; the proposed control laws have been designed for limit handling. However I cannot find any specific assumption or design consideration that supports this idea.
+
+ANSWER: Note that for the feedforward design, the nonlinear control law based on the nonlinear tire curves and steady state handling diagram (Equation 7) is used for the steady state analysis shown in Figures 5 and 7. This steady state analysis is performed in both figures using the nonlinear bicycle model at a high lateral acceleration. We do also linearize this feedforward control law in Equation 10c in order to perform a linear analysis as well, but this linearization is not used in any of the three control laws discussed below in COMMENT 2. We have clarified this
+in the revised submission.
+
+The theoretical justification for using the lookahead steering feedback controllower at the limits of handling was studied by Talvala and Gerdes using Lyapunov theory several years ago. Their work is cited and described in the introduction of our paper.
+
+
+
+
+COMMENT 2:  In the paper four types of the control laws have been introduced; The authors believe that just two of these control strategies need to be tested and other ones do not have satisfactory performance.
+
+ANSWER: There are actually only three main controllers described in the paper. Equation 5 is provided only to highlight the reason behind the steering oscillations observed by the center of percussion feedforward controller described in prior work from Kritayikarana and Gerdes. Additionally, the linearized controller used in Equation 10 is
+provided only for the purpose of linear steady-state and root locus analysis.
+
+The first controller discussed uses the lookahead steering feedback (Equation 9) and nonlinear feedforward based from the handling diagram (Equation 7). This is shown to be exhibit large path tracking errors at the limits of handling, both experimentally (Figure 14) and in simulation (Figure 5). 
+
+The second controller discussed is the nonlinear feedforward (Eqn 7), with feedback that directly incorporates the sideslip angle (Eqn 12). We agree with your comment about justifying our decision not to fully test this controller, and have provided experimental data for this controller in an open parking lot. Please read our response to COMMENT 4.
+
+The final controller uses the nonlinear feedforward with steady state sideslip angle and feedback steering controller
+(Equation 15). This is tested experimentally. 
+
+
+
+COMMENT 3: I tried to find Equations 2 by taking time derivatives of Equations 1, as determined in the paper. But I couldn't find the results. Which states are supposed be constant?
+
+ANSWER: There were two typos in this equation.  Thank you for pointing this out, and apologies for the 
+typesetting error. The revised manuscript should make finding Equation 2 from Equation 1 much easier. 
+
+
+
+COMMENT 4: the authors are sure that incorporating real-time sideslip into the steering feedback make the system unstable and because of that it is not tested. I would like to see this idea proven at least by simulation results.
+
+ANSWER: In an early draft, we did show experimental results demonstrating the instability of the system with real-time sideslip incorporated. We removed this in our initial submission due to space concerns, but have added it back in to the new manuscript. It is a new subsection of the paper that is highlighted. 
+
+
+
+  

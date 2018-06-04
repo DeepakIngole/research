@@ -1,0 +1,70 @@
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Driving at the limits}}{3}
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Understeer and Oversteer}}{4}
+\contentsline {figure}{\numberline {1.3}{\ignorespaces Audi's autonomous RS7}}{8}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces Path coordinate system}}{19}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Block diagram of feedback-feedforward steering controller.\relax }}{20}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Schematic of planar bicycle model}}{22}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Projection of lateral error at distance $x_p$ in front of the center of gravity.\relax }}{24}
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Nonlinear tire curves for FFW steering.\relax }}{26}
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Schematic of planar bicycle model showing projected lookahead error.\relax }}{27}
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Steady-state path tracking error $e$, sideslip $\beta $ and heading deviation $\Delta \Psi $ as a function of vehicle speed.}}{29}
+\contentsline {figure}{\numberline {2.8}{\ignorespaces Steady-state cornering where vehicle has lateral error but no lookahead error.\relax }}{30}
+\contentsline {figure}{\numberline {2.9}{\ignorespaces Zero steady-state lateral deviation requires vehicle velocity vector to be tangent to path.\relax }}{31}
+\contentsline {figure}{\numberline {2.10}{\ignorespaces Steady-state simulation results with sideslip added to feedback control}}{32}
+\contentsline {figure}{\numberline {2.11}{\ignorespaces Closed-loop pole locations for steering system as vehicle speed is varied from 5 to 25 m/s}}{33}
+\contentsline {figure}{\numberline {2.12}{\ignorespaces Maximum speed for closed-loop stability for the original lookahead feedback and the modified feedback with sideslip tracking.}}{34}
+\contentsline {figure}{\numberline {2.13}{\ignorespaces Effect of incorporating sideslip behavior into feedforward steering command $\delta _\mathrm {FFW}$, as a function of vehicle speed and desired path curvature.\relax }}{36}
+\contentsline {figure}{\numberline {2.14}{\ignorespaces Audi TTS used for experimental validation.\relax }}{37}
+\contentsline {figure}{\numberline {2.15}{\ignorespaces Diagram showing controller setup.\relax }}{38}
+\contentsline {figure}{\numberline {2.16}{\ignorespaces Curvature and velocity profile inputs for steering controller as a function of distance along racing line.\relax }}{39}
+\contentsline {figure}{\numberline {2.17}{\ignorespaces Desired path for steering controller to follow.\relax }}{40}
+\contentsline {figure}{\numberline {2.18}{\ignorespaces Parking lot test for constant radius turning at 10 m/s and 13 m/s.}}{42}
+\contentsline {figure}{\numberline {2.19}{\ignorespaces Experimental data with combined acceleration magnitude 8 $\mathrm {m/s^2}$ over a 3 km stretch of Thunderhill Raceway Park. Results are shown for both the baseline FB-FFW controller and the modified controller with sideslip tracking in the feedforward loop.\relax }}{44}
+\contentsline {figure}{\numberline {2.20}{\ignorespaces Histogram of path tracking error for six laps around the track.}}{45}
+\contentsline {figure}{\numberline {2.21}{\ignorespaces Experimental data with combined acceleration magnitude 9.5 $\mathrm {m/s^2}$ over a 3 km stretch of Thunderhill Raceway Park.\relax }}{47}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces View of sample reference path and road boundaries}}{54}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Velocity profile generation illustration}}{57}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Nonlinear tire force curve given by Fiala model, along with affine tire model linearized at $\alpha = \mathaccentV {tilde}07E{\alpha }$. \relax }}{60}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Path update for an example turn.\relax }}{62}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Iterative algorithm for fast generation of vehicle trajectories.}}{64}
+\contentsline {figure}{\numberline {3.6}{\ignorespaces Overhead view of Thunderhill Raceway park along with generated path from algorithm.}}{66}
+\contentsline {figure}{\numberline {3.7}{\ignorespaces Lateral path deviation of racing line from track centerline as a function of distance along the centerline.}}{67}
+\contentsline {figure}{\numberline {3.8}{\ignorespaces Racing lines from the two-step fast generation approach, nonlinear gradient descent algorithm, and experimental data taken from professional driver.}}{68}
+\contentsline {figure}{\numberline {3.9}{\ignorespaces Racing lines from the two-step fast generation approach, nonlinear gradient descent algorithm, and experimental data taken from professional driver.}}{69}
+\contentsline {figure}{\numberline {3.10}{\ignorespaces Lap time as a function of iteration for the two-step fast trajectory generation method.}}{70}
+\contentsline {figure}{\numberline {3.11}{\ignorespaces Simulation results of fast generation algorithm}}{72}
+\contentsline {figure}{\numberline {3.12}{\ignorespaces Diagram of controller setup.\relax }}{74}
+\contentsline {figure}{\numberline {3.13}{\ignorespaces Experimental data for an autonomous vehicle driving the trajectories provided by the two-step fast generation and gradient descent algorithms.}}{76}
+\contentsline {figure}{\numberline {3.14}{\ignorespaces Minimum distance path around Thunder Hill\relax }}{78}
+\contentsline {figure}{\numberline {3.15}{\ignorespaces A family of racing lines generated from linear combinations of minimum distance and minimum curvature racing lines, with weighting parameter $\eta $.\relax }}{79}
+\contentsline {figure}{\numberline {3.16}{\ignorespaces Ten laps of professional human driver data overlaid over the minimum distance and minimum curvature solutions}}{81}
+\contentsline {figure}{\numberline {3.17}{\ignorespaces Simulation results comparing minimum curvature cost function with weighted cost function}}{84}
+\contentsline {figure}{\numberline {3.18}{\ignorespaces Racing lines for minimum curvature, minimum distance, and combined cost functions around region c.}}{85}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Experimentally recorded lap times (in seconds).\relax }}{88}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Controller tracking performance and tire slip norm on a test run at the limits of handling ($\mu =$ 0.95).(a) Desired vs actual speed of the vehicle. (b) Lateral tracking error and (c) tire slip norm as a function of distance along the path.\relax }}{89}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Lateral tire force curve as a function of longitudinal force $F_x$ and lateral tire slip $\alpha $.\relax }}{94}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Values of convergence bound $\gamma $ vs. $k_{p\delta }$ and $k_{d\delta }$ for PD iterative learning controller}}{102}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Curvature profile used for ILC simulation.}}{104}
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Simulated results for root-mean-square path tracking error at several values of vehicle acceleration}}{105}
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Simulated results for root-mean-square speed tracking error $v$ at several values of vehicle acceleration.}}{107}
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Controller setup for experimental testing of iterative learning control.\relax }}{108}
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Experimental results for path tracking error with Q-SISO learning controller, at peak lateral accelerations of 8 $\mathrm {m/s^2}$.\relax }}{110}
+\contentsline {figure}{\numberline {4.10}{\ignorespaces Experimental results for speed tracking error with Q-SISO learning controller, at peak lateral accelerations of 8.5 $\mathrm {m/s^2}$.\relax }}{111}
+\contentsline {figure}{\numberline {4.11}{\ignorespaces Experimental RMS tracking error for the Q-SISO learning controller at several levels of lateral acceleration. }}{113}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Reprint of Fig.\nobreakspace {}4.2\hbox {}. Controller tracking performance and tire slip norm on a test run at the limits of handling ($\mu =$ 0.95).\relax }}{116}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Desired speed for varying levels of $\mu $ - region 2}}{118}
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Desired speed for varying levels of $\mu $ - region 3}}{120}
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Greedy algorithm results for region 2.}}{122}
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Sample search tree for Thunderhill race track where there are only 3 experimentally observed full laps at $\mu =$ 0.9, 0.93, 0.95.\relax }}{124}
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Illustration of travel cost.}}{125}
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Costs when vehicle is and is not sliding.}}{127}
+\contentsline {figure}{\numberline {5.8}{\ignorespaces Coverage of experimental data}}{130}
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Minimum time $\mu (s)$ profile for Thunderhill, for both the A* solution and greedy algorithm solution.\relax }}{131}
+\contentsline {figure}{\numberline {5.10}{\ignorespaces Minimum time $\mu ^\star (s)$ profile from A* algorithm plotted on map of Thunderhill.\relax }}{132}
+\contentsline {figure}{\numberline {5.11}{\ignorespaces Time difference between experimental dataset collected with A* result $\mu ^*(s)$ and dataset from professional driver.}}{135}
+\addvspace {10\p@ }

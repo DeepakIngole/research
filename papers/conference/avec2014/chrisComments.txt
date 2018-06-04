@@ -1,0 +1,57 @@
+%big picture - make me think this is FB and FFW problem. 
+
+%couple of diff approaches
+
+%- portray two options
+- sideslip -> better transition is to go through path tracking, lookahead control schemes being common, most often can be small
+
+then bring in limits, then the sideslip no longer becomes trivial
+
+intro should mention best way to compensate is through ffw instead of feedback
+
+need combo of ffw and fb for path tracking -> feedback generally in form of lookahead error. In general, produces good results, but idea that since vehicle velocity and heading are not the same, steady state errors with sideslip angle - in linear region, not a huge issue, cite previous work to show sideslip angle. mention good stability properties, tracking
+performance.  new tracking region with higher sideslip angles - consider whether sideslip makes good sense as the feedback, but this loses stability properties. Integrating into the feedforward. Ultimately: this is a question of FB and FFW. 
+
+show that structure in Fig 1 are general - can also put in derivative
+
+
+should read as more of a development, heres the development of a basic 
+FFW - assume quasi-ss operation of bike model - not just kinematic relationships, but that doesn' assume tire slips
+
+
+avoid passivity, watch tense changes
+
+With the feedforward block complete, the remaining aspect is the feedback, 
+
+sentence about limits of handling in LOOKAHEAD FEEDBACK is not necessary.
+
+
+put nonlinear aspect into Fig 7 - not in the experimental data
+
+the first idea should be give the reader the idea of compensating for sideslip angle in the feedback term to reduce that tracking error - establish that tracking error is an issue because sideslip grows with
+nonlinear model. 
+
+check conference paper for rossetter over the thesis.
+
+look at from 3 m/s^2
+
+reproduce fig. 9 in both cases
+
+make clear in captions - steady state results at ay = 3 m/s^2 and 7 m/s^2 and nonlinear model
+
+caption fig. 9 in similar way. 
+
+make clear that Fig. 10 has linear model. Max speed for CL stability, based on linear model. 
+
+Be more explicit in Sec. 8, - we can get BOTH PATH TRACKING and stability - USE WORDS. 
+
+conclusion - don't go into "this paper goes into methods" - path tracking for - autonomous vehicle must be able to path tracks up to
+their capabilities - sideslip angle can become quite large. by compensating the feedforward control -> don't just be like "this considers". 
+
+Look through references - remove awkward citations and crap. 
+
+compensate for sideslip region in feedback
+
+
+
+

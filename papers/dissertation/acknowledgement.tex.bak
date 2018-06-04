@@ -1,0 +1,56 @@
+% the last preface section (e.g., acknowledgement.tex)
+% should look like
+\prefacesection{Acknowledgment}
+
+My dad has been my biggest role model for as long as I can remember,
+dating back to when I was three or four and liked to copy everything he did. There's a picture we have back home where my dad is
+shaving before work, and there I am standing next to him with shaving cream all over my face, trying to imitate him with a (hopefully) fake razor 
+my mom gave me. I think it was in middle school when I first comprehended how smart my dad was, just based on the kinds of books
+he had in his office at work and home. I would sometimes open one up just to see the fancy math symbols, which
+were like a beautiful foreign language to me. Wanting to be like him is probably the number one reason I went to an engineering school
+for undergrad and definitely a major reason why I decided to do a PhD. But he's a statics guy, dealing primarily with structures that really should
+not move too much. Sorry dad, but I've always found dynamics a little more exciting, and cars are just more beautiful than planes ;)
+
+The rest of my family is pretty awesome too. My younger sister Esha has an enormous heart and in her words, is the ``glue" that holds
+our family together. While I would like her to spend a little less time studying in med school and more time out and about in Chicago,
+I always look forward to catching up with her. My youngest sister Rhea has been gifted with a sense of humor very similar to mine, and even though
+she is eight years younger than me, we have a blast playing video games, quoting \textit{Mean Girls}, and constantly teasing Esha. Finally, my mom has
+been the best mom a son could have, and has supported me even though she was very sad when her ``bestest" decided to move across the country to California. Whenever I visit home, I always
+get to pick what the family eats for dinner and I always get fed first, much to my sisters' dismay.
+
+Academically and professionally, I owe a lot to my advisor Chris Gerdes. Dedicating an entire lab to automotive research is
+ very difficult given the cyclical nature
+of the automotive industry. Nevertheless, he has established one of the strongest automotive research labs in the
+country, and it has been amazing to be a part of his program's growth over the last five years. My favorite interactions with Chris came during
+our research trips to the Thunderhill race course. At the race track, he was always eager sit in the car with me while I tested my research ideas, offering
+insights and perspectives that he has developed over 25 years working with cars. In the evening, it was great to relax after a long day of data
+collection and brainstorm ideas to try for the next day. I occasionally had the chance to drive home with Chris, and I always enjoyed 
+our conversations about everything from the stock market to Stanford football. It was during these conversations that I realized Chris' passion
+for automobiles is exceeded only by his dedication to his family, and that has had a big impact on me. 
+
+I also owe Chris for choosing a great bunch of people for me to work with. The Dynamic Design Lab is a diverse collection of highly intelligent
+people from all over the place, both geographically and personally. Some of my closest connections at Stanford have been with members of the DDL, and
+I will always remember our happy hours, celebrations, and send-off parties as some of the best times I have had here. 
+One thing I've learned while here is that members of our lab form a small but out-sized network of close friends and future colleagues that remains in place long after graduation. 
+ In addition to being great friends and colleagues, members of the DDL are great sources of knowledge, and the ideas that are generated in the lab every day provide a great headwind for
+doing amazing research. 
+
+There are a few people I have worked with that I would like to acknowledge personally. John Subosits, Vincent Laurense, Paul Theodosis, Joe Funke and Krisada Kritiyakirana have
+all been great colleagues on the Audi-Stanford racing project, and have spent many hours of their own time helping me with the
+significant data collection effort required for this dissertation. Additionally, I am grateful to have had the help of Samuel Schacher and John Pedersen during the summers
+of 2014 and 2015. I would also like to thank members of the Audi Electronics Research Laboratory, especially Rob Simpson and Vadim Butakov, for being great resources with
+ our experimental Audi TTS testbed. In my time here, we have managed to break seemingly every component of the car at least once and went through a major overhaul of the control
+ electronics and firmware. Rob and Vadim were there every time we needed them, and we never had to miss a testing a trip due to a repair that was not performed on time. Finally,
+ it takes a lot of staff working behind the scenes to do great research, and I would like to thank Erina and Jo for the great job they have done over the last two years.
+ 
+I also would like to thank Dr. Mykel Kochenderfer and Dr. Allison Okamura for helping me strengthen this dissertation. Allison started at Stanford in 2011 just as I did, and I've always felt that I 
+could go to her for anything I needed help with. I also became friends with many of her students in the CHARM lab, and it was great to relax with them
+during design group happy hours. Dr. Kochenderfer arrived at Stanford during my fourth year, and has not only helped me structure my thesis contributions clearly
+and concisely, but has become a welcome addition to the autonomous vehicle program at Stanford. 
+
+And finally, where would I be without my lovely girlfriend Margaret? I met Margaret during my first year as a graduate student, and she has been a 
+great companion over the last four years as we have explored graduate life and the Bay Area together. Margaret likes to say that she followed me into
+doing a PhD, but the truth is that I have been following her for a lot longer. Margaret is a true believer in enjoying the everyday beauty of life, 
+and has showed me me how to enjoy things as simple as going on a hike, relaxing with her newly adopted cat, or more recently, eating at the same burger joint
+every single Saturday night ;) I'm not sure what my life will be like after I leave Stanford, but I know Margaret will be a significant part of it, and that
+makes me feel A-OK.

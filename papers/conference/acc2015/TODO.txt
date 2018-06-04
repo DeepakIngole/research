@@ -1,0 +1,126 @@
+TODO: 
+
+*Eq. (4) and (5) seemed disconnected from eachother and
+also the preceding text. What is \alpha in (4)? Is it
+\alpha_r and \alpha_f stacked into a vector? Please take
+care in clarifying these and also other modeling equations
+for better readability. I had trouble following these.
+
+*Section II.B paragraph 1: The statement is wrong.
+Nonlinear systems are actively studied in ILC, perhaps even
+more so than linear systems. Please correct this. 
+
+The phrase "The monotonic..." after (2) is wrong. This is
+only true in the more specific case e_{\infty}=0, which in
+general requires Q=I. It is possible in ILC design to
+choose filters that amplify the error, roughly similar to
+the case that in LTI systems the state feedback gain K can
+deteriorate the DC gain performance. Please also correct
+the phrase right after (18). Condition (19) is used in
+general to prevent large ILC transients, see Bristow et al.
+survey paper.
+
+(16) and (22) are disconnected. (22) should be for the
+more general update law u_{k+1}=Qu_k+Le_k as opposed to the
+more special case u_{k+1}=Q(u_k+Le_k) given in (16). (22b)
+should also be corrected to as (P^TTP+R+S)^{-1}P^TT ; I
+believe there are some typos and errors in ref. [13]. Refer
+to this conference paper, again by Bristow:
+http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=473
+9348
+
+*The phrase "However, a disadvantage is that..." is wrong.
+The learning filters are iteration invariant. What the
+authors mean is that the input is recalculated each
+iteration by matrix multiplication via (16), which is
+computationally expensive (O(n2)) save for simpler
+algorithms like proportional control, which is O(n). Please
+correct and clarify.
+
+*In the conclusion the phrase "While representing the
+vehicle dynamics.." is not clear. The two approaches
+sound the same to me.
+
+*Equations not referred to in the body of the text should
+not be numbered.
+
+*you use \kappa(s) in section II.A. Seeing that the
+independent variable s is not used anywhere else and could
+be confusing I suggest simplifying it to \kappa.
+
+*Not sure if this is vehicle dynamics convention but
+perhaps you can replace the yaw rate r with another symbol;
+r is often used as reference in control so I was confused
+at first.  
+
+
+Figure 2 leaves gaps in one's understanding:
+ a. x_la has to be guessed (while e and e_la are relatively
+clear).
+ b. The \beta (and even r) described in (3) aren't shown in
+Figure 2. Any method of displaying these in Figure 2 would
+add value to the illustration.
+ c. The direction of vectors F_y and U_y (though having the
+same geometric subscript) appears to be different.
+
+ Despite separate lateral forces F_yf and F_yr in (3),
+the formula (4) explains a (common ?) F_y and uses a common
+\alpha. Neither have support in Figure 2. One assumes that
+other than demonstrating the non-linear nature of F_y there
+is no other point that is missed.
+
+The subscript c in (7) is a bit distracting. One assumes
+it is for 'control'. But since it is eventually avoided
+anyway (e.g. (12)), that could be done early.
+
+Are the C_F used in (9) the same as C_f used in (8) ?
+Similarly, are the U_X used in (5), (8) same as U_x used in
+(3) ?
+
+5. The \kappa in (11) appears to be unexplained.
+
+
+The subscript L in (16) should be superscript as in
+(14a), it appears.
+
+ When Figure 3 is described, it is said that a low-pass
+filter improves ILC performance. Can the authors refer to
+any work where such a filter (on ILC output) is used ?
+
+8. Kindly write as "insufficient for controller design".
+
+ They should comment more on whether or not this approach
+is applicable in a more general setting, when one is
+dealing with a generic autonomous vehicle and not a racing
+car.
+
+How do you determine if the car is operating near the
+limits of its handling ? 
+
+It is a bit confusing that the condition for
+monotonic convergence (19) is included in the section on
+proportional-derivative controllers, while it is a general
+result for ILC and can therefore be included in the
+introduction of Section III.
+
+Include some comments about the design of
+T,R, and S for this specific application. The statements
+are rather general in the manuscript.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

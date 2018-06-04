@@ -1,0 +1,147 @@
+\chapter{Conclusion}
+\label{chapter6}
+
+Inspired by automobile racing, this dissertation documented several contributions for trajectory planning and control at the limits of handling.
+Chapter 2 presented a feedback-feedforward steering controller that simultaneously maintains vehicle stability at the limits
+of handling while minimizing lateral path deviation. Section \ref{sec:baselineFFW} presented an initial baseline 
+steering controller based on lookahead steering feedback and feedforward based on vehicle kinematics and steady-state tire forces. In \S \ref{sec:betafb}, analytical results revealed that path tracking performance
+ of the baseline controller could be improved if the vehicle sideslip angle is held tangent to the desired path. This desired sideslip behavior was incorporated into the
+feedforward control loop to create a robust steering controller capable of accurate path 
+tracking and oversteer correction at the physical limits of tire friction (\S \ref{sec:goodFFW}). Experimental data collected from an 
+Audi TTS test vehicle driving at the handling limits on a full length race circuit (\S \ref{sec:expresults}) demonstrated the desirable steering performance of the final controller design. 
+
+Chapter 3 presented a fast algorithm for 
+minimum-time path planning that divided the path generation task into two sequential lateral and longitudinal subproblems that were
+solved repeatedly. The longitudinal subproblem, described in \S \ref{sec:VP}, determined the minimum-time velocity profile given a fixed curvature profile. The lateral subproblem updated the path given the fixed speed profile by solving a convex optimization problem 
+ that minimized the curvature of the vehicle's driven path while staying within track boundaries and obeying discretized equations of motion (\S \ref{sec:UPDATE}).
+ Experimental lap times and racing lines from the proposed method were shown to be comparable to both a nonlinear gradient
+ descent solution and a trajectory recorded from a professional racecar driver (\S \ref{sec:ch3ExpRes}). The cost function for the path update subproblem was
+ also improved by incorporating a distance minimization term in \S \ref{sec:ADDMINDIST}. 
+
+Finally, Chapters 4 and 5 presented two approaches to gradually refine the driving performance of the autonomous race car 
+over time. Chapter 4 developed two iterative learning control (ILC) formulations that gradually determined the proper steering 
+and throttle inputs to precisely track the desired racing trajectory. In \S \ref{sec:ch4dsm}, simulation and analytical results were used to design and test convergence of 
+ proportional-derivative (PD) and quadratically optimal (Q-ILC) iterative learning controllers. Experimental results at combined vehicle accelerations of 9 $\mathrm{m/s^2}$
+ indicate that the proposed algorithm can rapidly attenuate trajectory following errors over just two or three laps of racing (\S \ref{sec:ch4ExpRes}).
+ Chapter 5 presented a tree-search algorithm to minimize experimental lap times by learning different acceleration limits for each turn on the
+track. An A* search algorithm was devised in \S \ref{sec:framingTL} to search through experimental data and find the best value of $\mu$ for each portion
+ of the track in order to globally minimize the resulting lap time. Key developments of this algorithm include designing an appropriate A* heuristic 
+ (\S \ref{sec:ch5astarheuristic}) to minimize the needed computation time and designing the cost function to account for the physical difficulty of altering the 
+ vehicle's trajectory while understeering or oversteering. 
+
+
+\section{Future Work}
+
+The dissertation concludes with a discussion of both future work and applications of the research to commercial automotive safety
+systems.
+
+\subsubsection{Feedback-Feedforward Steering Controller}
+
+One drawback of the feedback-feedforward steering controller in Chapter 2 is the reliance on steady-state feedforward estimates of 
+vehicle states. This will cause issues for tracking highly transient trajectories, such as those encountered in obstacle
+avoidance maneuvers \cite{joethesis}. Furthermore, because the sideslip dynamics are captured only at the \textit{feedforward} level
+to ensure robust stability margins, the steering controller becomes sensitive to modeling errors
+between the actual vehicle system and the steady-state model. 
+
+There are several avenues for future work to improve the path tracking performance of the steering controller. One possibility to improve robustness
+to plant modeling errors is to come back to the feedback controller that directly incorporates vehicle sideslip measurements in the feedback
+control law (\ref{eqn:vveq}). This controller was shown to have excellent path tracking characteristics. However, the controller suffered from
+poor stability margins at the handling limits, and a compromise was ultimately selected where steady-state predictions of the vehicle
+sideslip were used instead. A promising solution is to use a blend of measured and predicted sideslip values. For example, a higher level controller could transition between measured or estimated vehicle sideslip in (\ref{eqn:vveq}) depending
+on whether there is significant risk of the vehicle approaching the handling limits. 
+
+A second avenue for future work is to eliminate transient path tracking errors by tightening the lanekeeping controller gains. Funke \cite{joethesis}
+noted that transient dynamics become significant when avoiding obstacles at the limits of handling. An LQR approach for gain selection revealed that
+tighter path tracking is possible if the gain on heading error $\Delta\Psi$ is significantly shortened. Understandably, the drawback of this tighter path tracking is higher
+levels of steering input, typically resulting in high frequency twitches of the steering wheel. Again, an MPC controller could manage this
+tradeoff between smoother steering inputs and path tracking error. More of the standard lookahead controller could be used in normal steady-state driving situations, and tighter
+path tracking gains would be used in transient obstacle avoidance scenarios. 
+
+\subsubsection{Rapid Path Generation}
+
+The primary difficulty with the trajectory generation method from Chapter 3 is the need to balance minimizing path curvature and path length. 
+Without the computational expense of directly minimizing lap time or applying a trial-and error method, it is difficult to determine
+the areas of the track where minimizing distance is important. The presented method of learning optimization weights from human data provides a 
+quick solution, but professional driver data is not
+always available for a given racing circuit. To manage the tradeoff, it may be beneficial to develop an \textit{anytime} algorithm that
+ starts by globally minimizing curvature with a cheap
+convex optimization step, and then uses the remaining computational time to refine specific turns where minimizing curvature is unlikely to be the best approach. This would most likely rely
+on general heuristics learned for racing in general, and not just for a specific track. For example, on sequences of alternating left/right turns, only minimizing curvature may not be the best approach. 
+
+The second area for future work is transferring the presented algorithm onto an embedded computer for real-time trajectory planning. This enables
+the controller to account for real-time changes such as competing race vehicles and updated estimates of tire friction. This requires
+two steps. First, the convex optimization code for the path update step must be written in a language such as CVXGEN \cite{boydcvxgen}
+that is suitable for real-time computing. Second, given hardware restrictions on the size of optimization problems for embedded computing,
+the optimization algorithm must be modified into a ``preview" controller that optimizes the next several turns instead of the entire track. 
+The feasibility of this approach has been confirmed with a preliminary analysis, which showed that an optimization over 500 meters of track could be completed
+on the order of milliseconds using CVXGEN. 
+
+\subsubsection{Iterative Driving Improvement}
+
+Chapters 4 and 5 presented two interesting preliminary methods for an autonomous race car to learn how to drive better. Chapter 4 focused
+on improving tracking of a desired trajectory via iterative learning control, while Chapter 5 focused on modifying the \textit{longitudinal}
+component of the planned trajectory based on experimental observations of tire utilization and vehicle speeds. These two approaches should be
+combined and tested together, so that the vehicle begins with a preliminary trajectory planned with a conservative assumed friction value, and
+then slowly learns how to track that trajectory while simultaneously making the trajectory faster on the turns where tire slips are lower
+than predicted. 
+
+A key prerequisite for achieving this is the ability to perform the learning algorithms in real time. Both learning algorithms currently operate
+offline after a lap (or several laps) have already been recorded, and typically take 30 - 60 seconds of computing time in MATLAB. C++ implementation
+of the algorithms, particularly the tree-search approach from Chapter 5, could provide a significant computational speedup. Improvements in algorithm 
+efficiency and parallelization would enable a system where learning is continuously performed on a separate processor during the autonomous run itself.
+This would enable a futuristic system where the autonomous race vehicle could run uninterrupted for five or ten laps, improving the lap 
+time each lap through iterative learning control and trajectory modification. 
+
+\section{Applications for Future Automotive Safety \newline Systems}
+
+Automobile racing is a fascinating subject, and the quest for an autonomous vehicle that can compete with the best human drivers is akin to 
+to the search for chess algorithms in the 1970's and 80's that could defeat a grandmaster. While automobile racing occurs at
+accelerations that are much higher than those seen on passenger highways, trajectory planning and control algorithms for an autonomous
+race car have significant potential benefits for future autonomous passenger vehicles. In the same way that the race to beat the best
+human chess players inspired a new generation of broadly applicable artificial intelligence techniques, designing a fast race vehicle
+offers a new generation of technology for future passenger safety systems. In fact, transfer of technology from the race car
+to the passenger automobile is nothing new, and everyday automotive technology ranging from direct-shift gearboxes to the modern 
+disc brake can be traced to innovations in race technology \cite{deaton}. 
+
+\subsubsection{Steering Controller}
+
+The presented feedback-feedforward steering controller is immediately ready for application in commercial autonomous driving features.
+The required inputs of the algorithm are relatively simple to obtain. The controller requires knowledge of a desired speed and curvature
+profile, available from any high level trajectory planner that computes smooth driving profiles, such as the high level planner for Stanford's
+2008 ``Junior" DARPA Urban Challenge Vehicle \cite{junior08}. Additionally, the controller requires knowledge of the vehicle error states,
+namely the deviation from the desired path and the heading error from the desired path. While the Audi TTS used for experimental validation obtains these
+precisely from DGPS technology, this technology is not viable for commercial driving. However, there has been a large research effort on vehicle
+localization relative to a known map via sensor fusion of commercially available sensors such as standard GPS/INS, LIDAR, and cameras, resulting in
+localization accuracy suitable for autonomous driving \cite{jo2015}. 
+
+If incorporated in a passenger automobile, the feedback-feedforward algorithm would be able to achieve accurate and smooth driving
+in non-emergency situations. Common issues frequently reported on autonomous vehicles such as steering wheel twitches could be avoided
+along with significant lateral path deviation. Most importantly, in the event of an autonomous safety maneuver at the handling limits, the controller
+could follow an emergency trajectory without losing stability or deviating off the desired trajectory into an obstacle. Furthermore, the steering
+response would be smooth and non-oscillating, giving the human passengers confidence in the capability of their vehicle. 
+
+\subsubsection{Rapid Trajectory Planner}
+
+The rapid trajectory planner in Chapter 3 also offers potential for a commercial autonomous safety system. The algorithm could 
+be reformulated as a high level trajectory planner for the next several hundred meters of open road instead of over an entire
+closed-circuit race track. Combined with LIDAR or other sensor information on the presence of obstacles, the 
+objective of the lateral planner could be to avoid an upcoming obstacle while staying on the road, a 
+framework first proposed by Erlien et al. \cite{erlienACC} for shared human/computer control. However, instead of a shared controller minimizing deviation from the 
+driver's steering command, this trajectory planner would autonomously avoid obstacles while attempting to
+ maintain a minimum curvature path. The benefit of minimum-curvature obstacle avoidance is increased safety margins. By maximizing the permissible
+ collision-free speeds the car can safely drive at, the envelope of safe driving trajectories is increased. Furthermore, in non-emergency scenarios,
+ the trajectory planner can plan driving paths below the limits by driving through desired waypoints on the road with minimum curvature for
+ driver comfort. 
+ 
+ \subsubsection{Lap-to-Lap Learning}
+  
+ The algorithms for iteratively improving autonomous driving performance will be more difficult to apply in real-world situations, simply because most passenger driving doesn't
+ occur over the same closed-circuit race course. However, there is an emerging trend towards automation in all aspects of society, and several
+ industrial companies have expressed interest in iterative learning algorithms for repetitive driving maneuvers. For example, manufacturers of 
+ agricultural equipment have sponsored iterative learning research for heavy vehicles that can precisely repeat the same driving pattern for applications such as fertilizer
+and seed deployment \cite{liuILI}. Beyond agriculture, similar applications for iterative learning could include autonomous tour vehicles or 
+industrial vehicles for applications such as mining. Additionally, many drivers drive on similar roads every day for commuting or other routine
+trips. Iterative learning controllers could therefore be generalized to detect important information about current road conditions or obstacles that could
+be communicated back to upcoming vehicles. Advances in iterative learning could also enable applications where an automated system detects a routine commute and learns from human driver data
+in order to replicate the driving style of a specific passenger over time. This would be a vital step in gaining acceptance of autonomous vehicles as passengers
+would be more comfortable with a self-driving car that matches their own driving style. 

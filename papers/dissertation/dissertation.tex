@@ -1,0 +1,136 @@
+% basically this is a template file, you should be able to take it and
+% start running.
+
+% the philosophy behind this template is that each chapter or
+% chapterlike section goes in a separate file and you use the \include
+% command to input it into the final document.  The \includeonly
+% command can be used so you only need to work on one or two chapters at a
+% time (instead of having to either latex the entire book each time or
+% losing cross-references and page numbering)
+
+% copy this file and call it something like mythesis.tex
+
+\documentclass[12pt]{report}
+% note that the documentclass can take other option such as
+% twoside - for double sided printing
+% openright - if double side  chapters always start on odd pages
+% openany - if double side chapters start on the next page even or odd
+% 12pt can be replaced by 11pt
+
+\usepackage{suthesis-2e}
+\hyphenation{steering controller problem reference systems}
+%% load other packages you need
+%\usepackage{psfrag}
+%\usepackage{color}
+
+%\usepackage{amssymb,amsmath}
+%\usepackage{multirow}
+%\usepackage{ctable}
+%\usepackage{amsfonts}
+%  \newcommand{\field}[1]{\mathbb{#1}}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+	\newcommand{\field}[1]{\mathbb{#1}}
+\usepackage{amssymb}
+\usepackage{algpseudocode}
+\usepackage{dsfont}
+\usepackage{amsthm}
+\usepackage[pdftex]{graphicx}
+\usepackage{url}
+\usepackage[section]{placeins}
+\usepackage{subfig}
+\usepackage{fixltx2e}
+\usepackage{ctable}
+\usepackage{epstopdf}
+\usepackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+  \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+%\usepackage{showframe}
+%\usepackage[linktocpage=true,colorlinks=true]{hyperref}
+
+% enable cross referencing
+\usepackage{xr}
+\externaldocument[2-]{chapter2}
+\externaldocument[3-]{chapter3}
+\externaldocument[4-]{chapter4}
+
+\graphicspath{{./images/}{./images/chapter1/}{./images/chapter2/}{./images/chapter3/}{./images/chapter4/}{./images/chapter5/}{./images/chapter6/}{./images/appendix1/}}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.jpg,.png}
+
+%% uncomment the following and create mythesis-macros.sty for all your
+%% own macros.  This keeps this top level file looking fairly neat.
+\usepackage{mythesis-macros}
+
+\title{Trajectory Planning and Control for an Autonomous Race Vehicle}
+\author{Nitin R. Kapania}
+\dept{Mechanical Engineering} % default is Computer Science, uncomment for other departments
+\principaladviser{J. Christian Gerdes}
+\firstreader{Allison Okamura} %\firstreader{Stephen P. Boyd}
+\secondreader{Mykel Kochenderfer}
+
+%***********************************************
+%the following command allows you to select chapters to have compiled
+%\includeonly{chapter1}
+%\includeonly{chapter2}
+%\includeonly{chapter3}
+%\includeonly{chapter4}
+%\includeonly{chapter5}
+%\includeonly{chapter6}
+%\includeonly{appendix1}
+%***********************************************
+
+% if you feel real savvy use
+% \typein{Now put in includeonly}
+% the \typein command stops latex at this point and allows you to type
+% in a command such as
+% \includeonly{chapter3,chapter5}
+% this can save some time and means you don't have to edit this file
+% as much.
+
+\begin{document}
+
+
+% first the preface sections.
+
+% this includes the file preface.tex which should include the
+% following commands
+\beforepreface
+
+% dedication
+%\prefacesection{}
+\begin{center}
+\textit{For my dad.}
+\end{center}
+
+% any other preface sections
+\include{abstract}
+\include{acknowledgement}
+
+\afterpreface
+
+
+% now for the body of the thesis, modify the number of these lines as needed
+
+% this includes chapter1.tex which should start with a \chapter{...}
+% command
+\include{chapter1}
+\include{chapter2}
+\include{chapter3}
+\include{chapter4}
+\include{chapter5}
+\include{chapter6}
+
+% and the end material
+
+%\appendix
+
+%\include{appendix1}
+
+
+% Make the bibliography
+\bibliographystyle{plain}
+\bibliography{dissertation}
+
+%\onlinesignature
+\end{document}

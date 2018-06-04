@@ -1,0 +1,3 @@
+Do not include a signature or copywrite page since the univ. will add their own regardless of yours.
+Check margins.
+Use Shad's signature page code.

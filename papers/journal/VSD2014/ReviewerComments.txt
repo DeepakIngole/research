@@ -1,0 +1,24 @@
+Reviewer: 1
+
+Comments to the Author
+This review is for a paper titled Design of a Feedback-Feedforward Steering Controller for
+Accurate Path Tracking and Stability at the Limits of Handling.  I found the paper to be very interesting and well prepared.  I have only minor concerns and some questions that the authors might consider as part of any potential revisions.
+
+My first question is regarding the experimental results (which are very impressive).  The authors show that for parts of the circuit, that the vehicle understeers quite badly.  This is not surprising given the front weight bias of the vehicle.  If the controller can stabilize the vehicle, would it be possible to improve the on-track performance by using a normally oversteering (or at least less understeering) configuration?  Why not take advantage of the controller's ability to stabilize?  Secondly, I was surprised that the authors go directly from the control design to experimental results.  Why not confirm some of these proposals with a simulation of the same vehicle on the same track?  Perhaps this was done but not discussed in the paper? The sideslip angle in Figure 16 shows a "predicted" trace that is not described.  In any case, this would also allow a quick answer to the first question.
+
+Finally, the authors might attempt to find some higher resolution or vector format images for some of the Figures, esp 7-10, as they look quite pixelated in the draft.
+
+
+
+Reviewer: 2
+
+Comments to the Author
+The paper has presented different types of steering control strategy for autonomous vehicles during high-g maneuvers.  Generally the paper is well-organized and informative and I can recommend it for publication. However the following points can improve the quality of the paper:
+
+-       The main claim of the paper is; the proposed control laws have been designed for limit handling. However I cannot find any specific assumption or design consideration that supports this idea. The vehicle model which is used for controller design is linear so it is not accurate in high-g maneuvers. The steady state and stability analyses are also based on the bicycle linear model. So what does make the proposed control strategy a specific control strategy for limit handling? I can see that the experimental results can support the main claim but what is the theoretical base of it?
+
+-       In the paper four types of the control laws have been introduced;  Nonlinear feedforward/feedback steering controller ( Equation 5), linearized feedforward/feedback steering controller ( Equation 10), linearized feedforward/feedback ( with sideslip angle ) steering controller ( Equation 12), linearized feedforward ( with steady state sideslip angle ) /feedback steering controller ( Equation 15). The authors believe that just two of these control strategies need to be tested and other ones do not have satisfactory performance. The base of this judgment is linear analyses or just unproven claims.  I think even if the testing is not possible for all of them; by using accurate simulation they can prove their claims. Generally, I think by performing simulation for standard and simple cases, different types of the controller can be compared more clearly. It can enrich the paper together with the experimental tests.
+
+-       I tried to find Equations 2 by taking time derivatives of Equations 1, as determined in the paper. But I couldn't find the results. Which states are supposed be constant? Please clarify this part.
+
+-        Using estimated steady state value instead of real-time sideslip is a good idea because real-time sideslip estimation is not easy and accurate. But the authors are sure that incorporating real-time sideslip into the steering feedback make the system unstable and because of that it is not tested. I would like to see this idea proven at least by simulation results.
