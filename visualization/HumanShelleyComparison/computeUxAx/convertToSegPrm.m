@@ -1,0 +1,17 @@
+n = numel(data(:,1));
+seg_prm2 = zeros(n,13);
+seg_prm2(:,1) = data(:,1);
+seg_prm2(:,2) = segType;
+seg_prm2(:,3) = zeros(n,1);
+seg_prm2(:,4) = data(:,2);
+seg_prm2(:,5) = zeros(n,1);
+seg_prm2(:,6) = data(:,8);
+seg_prm2(:,7) = data(:,9);
+seg_prm2(:,8) = zeros(n,1);
+seg_prm2(:,9) = zeros(n,1);
+seg_prm2(:,10) = .9*ones(n,1);
+seg_prm2(:,11) = zeros(n,1);
+seg_prm2(:,12) = zeros(n,1);
+seg_prm2(:,13) = zeros(n,1);
+map_prm2 = [0 0 0 0 0 83 0 0];
+cumSum2 = cumsum(data(:,2));
