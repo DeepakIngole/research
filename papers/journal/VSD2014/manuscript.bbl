@@ -1,0 +1,74 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\normalfont{#1}}
+\providecommand{\urlprefix}{Available from: }
+
+\bibitem{shladover}
+Shladover~SE, Desoer~CA, Hedrick~JK, Tomizuka~M, Walrand~J, Zhang~W,
+  McMahon~DH, Peng~H, Sheikholeslam~S, McKeown~N. Automated vehicle control
+  developments in the path program. IEEE Transactions on Vehicular Technology.
+  1991;\hspace{0pt}40(1):114--130.
+
+\bibitem{nagai}
+Nagai~M, Mouri~H, Raksincharoensak~P. Vehicle lane-tracking control with
+  steering torque input. Vehicle System Dynamics Supplement.
+  2002;\hspace{0pt}37:267--278.
+
+\bibitem{mammar}
+Mammar~S, Koenig~D. Vehicle handling improvement by active steering. Vehicle
+  System Dynamics. 2002;\hspace{0pt}38:211--242.
+
+\bibitem{raharijaona}
+Raharijaona~T, Duc~G, Mammar~S. Robust control and $\mu$-analysis with
+  application to lateral driving assistance. In: Proceedings of IEEE
+  Intelligent Transportation Systems; 2003. p. 247--252.
+
+\bibitem{hingwe}
+Hingwe~P, Tomizuka~M. A variable look-ahead controller for lateral guidance of
+  four wheeled vehicles. In: Proceedings of the American Control Conference;
+  1998. p. 31--35.
+
+\bibitem{rosseter}
+Rossetter~EJ. A potential field framework for active vehicle lanekeeping
+  assistance [dissertation]. Stanford University; 2003.
+
+\bibitem{mickcop}
+Kritayakirana~K, Gerdes~JC. Using the center of percussion to design a steering
+  control for an autonomous racecar. Vehicle System Dynamics.
+  2012;\hspace{0pt}50:33--51.
+
+\bibitem{talvala}
+Talvala~KL, Gerdes~JC. Lanekeeping at the limits of handling: Stability via
+  lyapunov functions and a comparison with stability control. In: Dynamic
+  Systems and Control Conference; 2008. p. 361--368.
+
+\bibitem{filho14}
+Filho~C, Wolf~D. Dynamic inversion-based control for front wheel drive
+  autonomous ground vehicles near the limits of handling. In: Intelligent
+  Transportation Systems (ITSC), 2014 IEEE 17th International Conference on.
+  IEEE; 2014. p. 2138--2143.
+
+\bibitem{carvalho13}
+Carvalho~A, Gao~Y, Gray~A, Tseng~H, Borrelli~F. Predictive control of an
+  autonomous ground vehicle using an iterative linearization approach. In:
+  Intelligent Transportation Systems-(ITSC), 2013 16th International IEEE
+  Conference on; 2013. p. 2335--2340.
+
+\bibitem{yang14}
+Yang~D, Jacobson~B, Jonasson~M, Gordon~TJ. Closed--loop controller for
+  post--impact vehicle dynamics using individual wheel braking and front axle
+  steering. International Journal of Vehicle Autonomous Systems.
+  2014;\hspace{0pt}12(2):158--179.
+
+\bibitem{sharp10}
+Sharp~R. Rider control of a motorcycle near to its cornering limits. Vehicle
+  System Dynamics. 2012;\hspace{0pt}50(8):1193--1208.
+
+\bibitem{theodosis}
+Theodosis~PA, Gerdes~JC. Generating a racing line for an autonomous racecar
+  using professional driving techniques. In: Dynamic Systems and Control
+  Conference; 2011. p. 853--860.
+
+\bibitem{Pacejka2012}
+Pacejka~HB. Tire and vehicle dynamics. 3rd ed. Butterworth-Heinemann; 2012.
+
+\end{thebibliography}

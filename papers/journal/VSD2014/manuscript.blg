@@ -1,0 +1,53 @@
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: manuscript.aux
+The style file: nVSD.bst
+Database file #1: Bibliography.bib
+Warning--empty month in raharijaona
+Warning--empty month in hingwe
+Warning--empty month in talvala
+Warning--empty month in filho14
+Warning--empty month in carvalho13
+Warning--empty month in theodosis
+You've used 14 entries,
+            2848 wiz_defined-function locations,
+            697 strings with 6952 characters,
+and the built_in function-call counts, 14635 in all, are:
+= -- 1686
+> -- 136
+< -- 8
++ -- 54
+- -- 40
+* -- 907
+:= -- 1327
+add.period$ -- 50
+call.type$ -- 14
+change.case$ -- 28
+chr.to.int$ -- 6
+cite$ -- 20
+duplicate$ -- 1810
+empty$ -- 1272
+format.name$ -- 51
+if$ -- 3267
+int.to.chr$ -- 0
+int.to.str$ -- 14
+missing$ -- 150
+newline$ -- 47
+num.names$ -- 14
+pop$ -- 874
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 176
+stack$ -- 0
+substring$ -- 2087
+swap$ -- 347
+text.length$ -- 6
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 6
+while$ -- 90
+width$ -- 16
+write$ -- 131
+(There were 6 warnings)
