@@ -1,3 +1,14 @@
 *.pyc
 /PySim/__pycache__
 /simulation/Learning/trajectoryPrediction/__pycache__
+
+*.bag
+genesisLKcontroller/paths/sim
+genesisLKcontroller/paths/pf_6_23
+genesisLKcontroller/paths/pf_6_24
+genesisLKcontroller/paths/pr_6_20
+genesisLKcontroller/paths/ps_6_20
+genesisLKcontroller/scripts/analysis/old_code
+
+*.html
+*.png
