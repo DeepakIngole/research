@@ -1,1 +1,3 @@
 *.pyc
+/PySim/__pycache__
+/simulation/Learning/trajectoryPrediction/__pycache__
